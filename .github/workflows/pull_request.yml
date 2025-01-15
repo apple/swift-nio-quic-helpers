@@ -1,0 +1,49 @@
+name: PR
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  soundness:
+    name: Soundness
+    uses: swiftlang/github-workflows/.github/workflows/soundness.yml@0.0.11
+    with:
+      license_header_check_project_name: "SwiftNIO"
+      docs_check_container_image: "swift:6.3"
+      api_breakage_check_container_image: "swift:6.3"
+
+  unit-tests:
+    name: Unit tests
+    uses: apple/swift-nio/.github/workflows/unit_tests.yml@main
+    with:
+      linux_6_3_arguments_override: "-Xswiftc -warnings-as-errors --explicit-target-dependency-import-check error"
+      linux_nightly_next_arguments_override: "-Xswiftc -warnings-as-errors --explicit-target-dependency-import-check error"
+      linux_nightly_main_arguments_override: "--explicit-target-dependency-import-check error"
+
+  cxx-interop:
+    name: Cxx interop
+    # Workaround https://github.com/nektos/act/issues/1875
+    uses: apple/swift-nio/.github/workflows/cxx_interop.yml@main
+
+  macos-tests:
+    name: macOS tests
+    # Workaround https://github.com/nektos/act/issues/1875
+    uses: apple/swift-nio/.github/workflows/macos_tests.yml@main
+    with:
+      runner_pool: general
+      build_scheme: swift-nio-quic-helpers
+      swift_6_1_enabled: false
+      swift_6_2_enabled: false
+
+  static-sdk:
+    name: Static Linux Swift SDK
+    # Workaround https://github.com/nektos/act/issues/1875
+    uses: apple/swift-nio/.github/workflows/static_sdk.yml@main
+
+  release-builds:
+    name: Release builds
+    uses: apple/swift-nio/.github/workflows/release_builds.yml@main

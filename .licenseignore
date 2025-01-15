@@ -1,0 +1,5 @@
+.editorconfig
+Package.swift
+**/Package.swift
+Package@-*.swift
+**/Package@-*.swift
