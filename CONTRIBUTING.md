@@ -1,6 +1,6 @@
 # Contributing guide
 
-Welcome to the [SwiftNIO](https://github.com/apple/swift-nio) community! Contributions to the SwiftNIO QUIC Helpers project are welcomed and encouraged. This project aligns with the [Swift community contributing guidelines](swift.org/contributing) which is a great first read.
+Welcome to the [SwiftNIO](https://github.com/apple/swift-nio) community! Contributions to the SwiftNIO QUIC Helpers project are welcomed and encouraged.
 
 We welcome developers from all backgrounds and experience levels. A diverse and friendly community has more great ideas, more unique perspectives, and produces better software.
 
@@ -70,6 +70,10 @@ Local Testing: Before submission, ensure all changes pass local tests:
 swift test
 ``` 
 Automated Tests: New features and bug fixes require corresponding automated tests (unit, integration, end-to-end) that validate the intended behavior and prevent regressions. You are responsible for verifying the correctness and coverage of all tests.
+
+## Code of Conduct
+
+We've adopted the [Apple Open Source Code of Conduct](https://github.com/apple/.github/blob/main/CODE_OF_CONDUCT.md). All community members are expected to adhere to these guidelines.
 
 ## Legal
 
