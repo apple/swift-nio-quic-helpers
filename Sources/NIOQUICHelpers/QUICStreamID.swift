@@ -30,44 +30,20 @@
 /// A stream ID that is used out of order results in all streams of that type with lower-numbered stream IDs also being opened.
 /// The first bidirectional stream opened by the client has a stream ID of 0.
 public struct QUICStreamID: Hashable, Sendable, RawRepresentable {
-    /// An enum describing the stream type.
-    public enum StreamType: Sendable, Hashable {
-        /// Indicates that the stream is client initiated and bidirectional.
-        case clientInitiatedBidirectional
-        /// Indicates that the stream is client initiated and unidirectional.
-        case clientInitiatedUnidirectional
-        /// Indicates that the stream is server initiated and bidirectional.
-        case serverInitiatedBidirectional
-        /// Indicates that the stream is server initiated and unidirectional.
-        case serverInitiatedUnidirectional
-
-        init(_ streamID: UInt64) {
-            let isClientInitiated = (streamID & 0x1) == 0
-            let isBidirectional = (streamID & 0x2) == 0
-
-            switch (isClientInitiated, isBidirectional) {
-            case (true, true):
-                self = .clientInitiatedBidirectional
-            case (true, false):
-                self = .clientInitiatedUnidirectional
-            case (false, true):
-                self = .serverInitiatedBidirectional
-            case (false, false):
-                self = .serverInitiatedUnidirectional
-            }
-        }
-    }
-
     public let rawValue: UInt64
 
+    @available(*, deprecated, renamed: "QUICStreamType")
+    public typealias StreamType = QUICStreamType
+
     /// The type of the stream.
-    public let type: StreamType
+    public var type: QUICStreamType {
+        QUICStreamType(self)
+    }
 
     /// Create a `QUICStreamID` for a specific integer value.
     public init(rawValue: UInt64) {
         precondition(rawValue <= QUICEncodableInteger.maxValue)
         self.rawValue = rawValue
-        self.type = StreamType(rawValue)
     }
 }
 
@@ -93,5 +69,13 @@ extension UInt64 {
 extension QUICStreamID: CustomStringConvertible {
     public var description: String {
         String(describing: self.rawValue)
+    }
+}
+
+extension QUICStreamID: ExpressibleByIntegerLiteral {
+    public typealias IntegerLiteralType = RawValue
+
+    public init(integerLiteral value: RawValue) {
+        self.init(rawValue: value)
     }
 }
