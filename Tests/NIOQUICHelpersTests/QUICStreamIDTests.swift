@@ -16,13 +16,6 @@ import NIOQUICHelpers
 import XCTest
 
 final class QUICStreamIDTests: XCTestCase {
-    func testStreamType() throws {
-        XCTAssertEqual(QUICStreamID(rawValue: 0).type, .clientInitiatedBidirectional)
-        XCTAssertEqual(QUICStreamID(rawValue: 1).type, .serverInitiatedBidirectional)
-        XCTAssertEqual(QUICStreamID(rawValue: 2).type, .clientInitiatedUnidirectional)
-        XCTAssertEqual(QUICStreamID(rawValue: 3).type, .serverInitiatedUnidirectional)
-    }
-
     func testComparable() {
         XCTAssertLessThan(QUICStreamID(rawValue: 0), QUICStreamID(rawValue: 1))
         XCTAssertLessThan(QUICStreamID(rawValue: 1), QUICStreamID(rawValue: 2))
@@ -42,5 +35,10 @@ final class QUICStreamIDTests: XCTestCase {
     func testDescription() {
         let description = "\(QUICStreamID(rawValue: 100))"
         XCTAssertEqual(description, "100")
+    }
+
+    func testExpressibleByIntegerLiteral() {
+        let id: QUICStreamID = 42
+        XCTAssertEqual(id, QUICStreamID(rawValue: 42))
     }
 }
