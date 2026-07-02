@@ -39,3 +39,11 @@ swift test --filter QUICStreamIDTests.testDescription
 
 [swift-nio-quic]: https://github.com/apple/swift-nio-quic
 [swift-nio-http3]: https://github.com/apple/swift-nio-http3
+
+### Versioning
+
+While the library is in the 0.x.x version range, you should adopt it using
+the `.upToNextMinor(from: "0.1.0")` specifier. During this period, breaking
+changes are intended to map to minor version bumps, so depending on the
+library this way picks up smaller, non-breaking changes automatically while
+protecting against API-breaking ones.
