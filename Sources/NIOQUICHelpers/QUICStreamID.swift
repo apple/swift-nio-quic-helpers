@@ -47,6 +47,14 @@ public struct QUICStreamID: Hashable, Sendable, RawRepresentable {
     }
 }
 
+extension QUICStreamID {
+    // This is a Hashable customisation point. This makes hashing significantly cheaper for
+    // types which wrap primitives.
+    public func _rawHashValue(seed: Int) -> Int {
+        self.rawValue._rawHashValue(seed: seed)
+    }
+}
+
 extension QUICStreamID: Comparable {}
 
 extension QUICStreamID: Strideable {
