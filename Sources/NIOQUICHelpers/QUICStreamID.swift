@@ -36,11 +36,13 @@ public struct QUICStreamID: Hashable, Sendable, RawRepresentable {
     public typealias StreamType = QUICStreamType
 
     /// The type of the stream.
+    @inlinable
     public var type: QUICStreamType {
         QUICStreamType(self)
     }
 
     /// Create a `QUICStreamID` for a specific integer value.
+    @inlinable
     public init(rawValue: UInt64) {
         precondition(rawValue <= QUICEncodableInteger.maxValue)
         self.rawValue = rawValue
@@ -50,6 +52,7 @@ public struct QUICStreamID: Hashable, Sendable, RawRepresentable {
 extension QUICStreamID {
     // This is a Hashable customisation point. This makes hashing significantly cheaper for
     // types which wrap primitives.
+    @inlinable
     public func _rawHashValue(seed: Int) -> Int {
         self.rawValue._rawHashValue(seed: seed)
     }
@@ -58,10 +61,12 @@ extension QUICStreamID {
 extension QUICStreamID: Comparable {}
 
 extension QUICStreamID: Strideable {
+    @inlinable
     public func distance(to other: QUICStreamID) -> Int {
         self.rawValue.distance(to: other.rawValue)
     }
 
+    @inlinable
     public func advanced(by n: Int) -> QUICStreamID {
         Self(rawValue: self.rawValue.advanced(by: n))
     }
@@ -69,12 +74,14 @@ extension QUICStreamID: Strideable {
 
 extension UInt64 {
     /// Create a `UInt64` from a specific `QUICStreamID`.
+    @inlinable
     public init(_ quicStreamID: QUICStreamID) {
         self = quicStreamID.rawValue
     }
 }
 
 extension QUICStreamID: CustomStringConvertible {
+    @inlinable
     public var description: String {
         String(describing: self.rawValue)
     }
@@ -83,6 +90,7 @@ extension QUICStreamID: CustomStringConvertible {
 extension QUICStreamID: ExpressibleByIntegerLiteral {
     public typealias IntegerLiteralType = RawValue
 
+    @inlinable
     public init(integerLiteral value: RawValue) {
         self.init(rawValue: value)
     }

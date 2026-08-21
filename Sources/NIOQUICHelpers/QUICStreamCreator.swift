@@ -18,6 +18,7 @@ public struct QUICStreamInitializerParameters: Sendable {
     public var channel: any Channel
     public var streamID: QUICStreamID
 
+    @inlinable
     public init(channel: any Channel, streamID: QUICStreamID) {
         self.channel = channel
         self.streamID = streamID

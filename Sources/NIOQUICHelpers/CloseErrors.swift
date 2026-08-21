@@ -22,6 +22,7 @@ public struct QUICStreamResetError: Error {
 
     /// Create a new ``QUICStreamResetError``.
     /// - Parameter code: The application error code sent by the remote peer.
+    @inlinable
     public init(code: QUICApplicationErrorCode) {
         self.code = code
     }
@@ -35,6 +36,7 @@ public struct QUICStopSendingError: Error {
 
     /// Create a new ``QUICStopSendingError``.
     /// - Parameter code: The application error code sent by the remote peer.
+    @inlinable
     public init(code: QUICApplicationErrorCode) {
         self.code = code
     }

@@ -27,6 +27,7 @@ public struct QUICCloseConnectionEvent: Sendable {
     /// - Parameters:
     ///   - code: The application error code indicating the reason for closing this connection.
     ///   - reasonPhrase: Additional diagnostic information for the closure.
+    @inlinable
     public init(code: QUICApplicationErrorCode, reasonPhrase: String?) {
         self.code = code
         self.reasonPhrase = reasonPhrase
@@ -41,6 +42,7 @@ public struct QUICStopSendingEvent: Sendable {
 
     /// Create a new ``QUICStopSendingEvent``.
     /// - Parameter code: The application error code indicating the reason for closing this stream.
+    @inlinable
     public init(code: QUICApplicationErrorCode) {
         self.code = code
     }
@@ -54,6 +56,7 @@ public struct QUICResetStreamEvent: Sendable {
 
     /// Create a new ``QUICResetStreamEvent``.
     /// - Parameter code: The application error code indicating the reason for closing this stream.
+    @inlinable
     public init(code: QUICApplicationErrorCode) {
         self.code = code
     }

@@ -26,6 +26,7 @@ public enum QUICStreamType: Sendable, Hashable {
     /// Derive the stream type from the ID of a QUIC stream.
     ///
     /// - Parameter streamID: The ID to the stream to get the type of.
+    @inlinable
     public init(_ streamID: QUICStreamID) {
         let isClientInitiated = (streamID.rawValue & 0x1) == 0
         let isBidirectional = (streamID.rawValue & 0x2) == 0
@@ -43,6 +44,7 @@ public enum QUICStreamType: Sendable, Hashable {
     }
 
     /// Returns whether the client initiated the stream.
+    @inlinable
     public var isClientInitiated: Bool {
         switch self {
         case .clientInitiatedBidirectional, .clientInitiatedUnidirectional:
@@ -53,6 +55,7 @@ public enum QUICStreamType: Sendable, Hashable {
     }
 
     /// Returns whether the server initiated the stream.
+    @inlinable
     public var isServerInitiated: Bool {
         switch self {
         case .serverInitiatedBidirectional, .serverInitiatedUnidirectional:
@@ -63,6 +66,7 @@ public enum QUICStreamType: Sendable, Hashable {
     }
 
     /// Returns whether the stream is unidirectional.
+    @inlinable
     public var isUnidirectional: Bool {
         switch self {
         case .clientInitiatedUnidirectional, .serverInitiatedUnidirectional:
@@ -73,6 +77,7 @@ public enum QUICStreamType: Sendable, Hashable {
     }
 
     /// Returns whether the stream is bidirectional.
+    @inlinable
     public var isBidirectional: Bool {
         switch self {
         case .clientInitiatedBidirectional, .serverInitiatedBidirectional:
