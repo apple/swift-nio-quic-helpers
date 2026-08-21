@@ -25,6 +25,7 @@ public struct QUICApplicationErrorCode: Hashable, Sendable, CustomStringConverti
     /// Create a new ``QUICApplicationErrorCode``.
     /// - Parameter rawValue: The application protocol error code. Must be less than 2^62.
     /// - Returns: `nil` if `rawValue` exceeds the maximum QUIC variable-length integer value.
+    @inlinable
     public init?(_ rawValue: UInt64) {
         if rawValue <= QUICEncodableInteger.maxValue {
             self.rawValue = rawValue
@@ -33,6 +34,7 @@ public struct QUICApplicationErrorCode: Hashable, Sendable, CustomStringConverti
         }
     }
 
+    @inlinable
     public var description: String {
         String(self.rawValue)
     }
