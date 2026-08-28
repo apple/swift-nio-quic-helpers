@@ -15,6 +15,10 @@
 
 import PackageDescription
 
+let swiftSettings: [SwiftSetting] = [
+    .enableExperimentalFeature("AnyAppleOSAvailability")
+]
+
 let package = Package(
     name: "swift-nio-quic-helpers",
     products: [
@@ -28,13 +32,15 @@ let package = Package(
             name: "NIOQUICHelpers",
             dependencies: [
                 .product(name: "NIOCore", package: "swift-nio")
-            ]
+            ],
+            swiftSettings: swiftSettings
         ),
         .testTarget(
             name: "NIOQUICHelpersTests",
             dependencies: [
                 .target(name: "NIOQUICHelpers")
-            ]
+            ],
+            swiftSettings: swiftSettings
         ),
     ]
 )
