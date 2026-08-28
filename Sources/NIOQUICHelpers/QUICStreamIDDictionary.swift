@@ -30,7 +30,7 @@
 /// array is used and a linear scan is used to find the appropriate element. For 33 elements and
 /// above a regular dictionary is used. Only one storage tier is used at any one time.
 @available(anyAppleOS 26, *)
-struct QUICStreamIDDictionary<Value> {
+public struct QUICStreamIDDictionary<Value> {
     /// Caches keyed by the "type bits" of a QUIC stream ID (i.e. `rawValue & 0b11`).
     private var caches: InlineArray<4, QUICStreamIDCache<Value>>
 
@@ -67,7 +67,7 @@ struct QUICStreamIDDictionary<Value> {
     }
 
     /// Returns the number of elements in the dictionary.
-    var count: Int {
+    public var count: Int {
         var total = self.overflowCount
         total += self.caches[0].count
         total += self.caches[1].count
@@ -77,7 +77,7 @@ struct QUICStreamIDDictionary<Value> {
     }
 
     /// Returns whether the dictionary is empty.
-    var isEmpty: Bool {
+    public var isEmpty: Bool {
         self.count == 0
     }
 
@@ -88,7 +88,7 @@ struct QUICStreamIDDictionary<Value> {
     ///     of two. Defaults to 16.
     ///   - cacheGrowthThreshold: The utilisation threshold above which a cache will grow, defaults
     ///     to 0.6.
-    init(initialCacheCapacity: Int = 16, cacheGrowthThreshold: Double = 0.6) {
+    public init(initialCacheCapacity: Int = 16, cacheGrowthThreshold: Double = 0.6) {
         self.caches = [
             QUICStreamIDCache(capacity: initialCacheCapacity, threshold: cacheGrowthThreshold),
             QUICStreamIDCache(capacity: initialCacheCapacity, threshold: cacheGrowthThreshold),
@@ -101,7 +101,7 @@ struct QUICStreamIDDictionary<Value> {
     }
 
     /// Returns whether the dictionary contains a value for the given stream ID.
-    func contains(_ id: QUICStreamID) -> Bool {
+    public func contains(_ id: QUICStreamID) -> Bool {
         if self.caches[self.cacheIndex(of: id)].contains(id) {
             return true
         } else {
@@ -110,7 +110,7 @@ struct QUICStreamIDDictionary<Value> {
     }
 
     /// Returns or updates the value associated with a given ID.
-    subscript(id: QUICStreamID) -> Value? {
+    public subscript(id: QUICStreamID) -> Value? {
         get {
             if let value = self.caches[self.cacheIndex(of: id)][id] {
                 return value
@@ -136,7 +136,7 @@ struct QUICStreamIDDictionary<Value> {
     ///   - id: The stream ID to update.
     /// - Returns: The value previously set for the given ID.
     @discardableResult
-    mutating func updateValue(_ value: Value, forID id: QUICStreamID) -> Value? {
+    public mutating func updateValue(_ value: Value, forID id: QUICStreamID) -> Value? {
         let previous: Value?
 
         if self.overflowCount == 0 || self.caches[self.cacheIndex(of: id)].contains(id) {
@@ -156,7 +156,7 @@ struct QUICStreamIDDictionary<Value> {
 
     /// Removes the value associated with the given ID.
     @discardableResult
-    mutating func removeValue(forID id: QUICStreamID) -> Value? {
+    public mutating func removeValue(forID id: QUICStreamID) -> Value? {
         if let removed = self.caches[self.cacheIndex(of: id)].removeValue(forID: id) {
             return removed
         } else if self.overflowCount == 0 {
@@ -195,7 +195,7 @@ struct QUICStreamIDDictionary<Value> {
     }
 
     /// Removes all values.
-    mutating func removeAll() {
+    public mutating func removeAll() {
         for index in self.caches.indices {
             self.caches[index].removeAll()
         }
@@ -300,13 +300,13 @@ extension QUICStreamIDDictionary {
 
 @available(anyAppleOS 26, *)
 extension QUICStreamIDDictionary: Sequence {
-    typealias Element = (QUICStreamID, Value)
+    public typealias Element = (QUICStreamID, Value)
 
-    func makeIterator() -> Iterator {
+    public func makeIterator() -> Iterator {
         Iterator(storage: self)
     }
 
-    struct Iterator: IteratorProtocol {
+    public struct Iterator: IteratorProtocol {
         private let storage: QUICStreamIDDictionary<Value>
         private var state: State
 
@@ -323,7 +323,7 @@ extension QUICStreamIDDictionary: Sequence {
             self.storage = storage
         }
 
-        mutating func next() -> (QUICStreamID, Value)? {
+        public mutating func next() -> (QUICStreamID, Value)? {
             while true {
                 switch self.state {
                 case .iteratingCache(let index, var iterator):
