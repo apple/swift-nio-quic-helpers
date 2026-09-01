@@ -327,6 +327,47 @@ struct QUICStreamIDDictionaryTests {
         (0..<count).map { QUICStreamID(rawValue: UInt64($0) * 16) }
     }
 
+    @available(anyAppleOS 26, *)
+    @Test func defaultSubscriptReadsDefaultWithoutInserting() {
+        let dictionary = QUICStreamIDDictionary<Int>()
+
+        #expect(dictionary[1, default: 42] == 42)
+        #expect(dictionary.isEmpty)
+    }
+
+    @available(anyAppleOS 26, *)
+    @Test func defaultSubscriptInsertsWhenMutated() {
+        var dictionary = QUICStreamIDDictionary<Int>()
+        dictionary[1, default: 42] += 1
+
+        #expect(dictionary[1] == 43)
+        #expect(dictionary.count == 1)
+    }
+
+    @available(anyAppleOS 26, *)
+    @Test func defaultSubscriptMutatesCachedValue() {
+        var dictionary = QUICStreamIDDictionary<[Int]>()
+        dictionary[1] = [1]
+        dictionary[1, default: []].append(2)
+
+        #expect(dictionary[1] == [1, 2])
+        #expect(dictionary.count == 1)
+    }
+
+    @available(anyAppleOS 26, *)
+    @Test func defaultSubscriptMutatesEvictedValue() {
+        var dictionary = Self.evictingDictionary()
+        let (evicted, evictor) = Self.collidingIDs
+
+        dictionary[evicted] = 1
+        dictionary[evictor] = 2
+        dictionary[evicted, default: 42] += 10
+
+        #expect(dictionary[evicted] == 11)
+        #expect(dictionary._testOnly_isInOverflowArray(evicted))
+        #expect(dictionary.count == 2)
+    }
+
     /// Mirrors `QUICStreamIDDictionary.overflowArrayCapacity`, which is private.
     private static let overflowArrayCapacity = 32
 

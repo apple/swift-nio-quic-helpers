@@ -143,6 +143,24 @@ public struct QUICStreamIDDictionary<Value> {
         }
     }
 
+    /// Returns or updates the value associated with a given ID.
+    ///
+    /// - Parameters:
+    ///   - id: The stream ID.
+    ///   - defaultValue: The value to use if the dictionary has no value for the given ID.
+    @inlinable
+    public subscript(
+        id: QUICStreamID,
+        default defaultValue: @autoclosure () -> Value
+    ) -> Value {
+        get {
+            self[id] ?? defaultValue()
+        }
+        set {
+            self.updateValue(newValue, forID: id)
+        }
+    }
+
     /// Updates the value for a given ID, returning the previously set value.
     ///
     /// - Parameters:
