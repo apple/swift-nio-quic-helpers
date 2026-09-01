@@ -73,7 +73,7 @@ private func streamChurn<Value>(_ benchmark: Benchmark, _ value: Value) {
         for _ in 0..<lookupsPerStream {
             blackHole(dictionary[id])
         }
-        blackHole(dictionary.removeValue(forID: id))
+        blackHole(dictionary.removeValue(forKey: id))
         id = QUICStreamID(rawValue: id.rawValue &+ 4)
     }
 }
@@ -106,7 +106,7 @@ private func steadyStateStreamChurn<Value>(_ benchmark: Benchmark, _ value: Valu
     var next = QUICStreamID(rawValue: UInt64(concurrentStreams) * 4)
     var index = 0
     for _ in benchmark.scaledIterations {
-        blackHole(dictionary.removeValue(forID: ids[index]))
+        blackHole(dictionary.removeValue(forKey: ids[index]))
         dictionary[next] = value
         for _ in 0..<lookupsPerStream {
             blackHole(dictionary[next])

@@ -27,7 +27,7 @@ struct QUICStreamIDDictionaryTests {
     @available(anyAppleOS 26, *)
     @Test func updateNewValue() {
         var dictionary = QUICStreamIDDictionary<Int>()
-        let previous = dictionary.updateValue(42, forID: 1)
+        let previous = dictionary.updateValue(42, forKey: 1)
         #expect(previous == nil)
         #expect(dictionary.count == 1)
     }
@@ -35,8 +35,8 @@ struct QUICStreamIDDictionaryTests {
     @available(anyAppleOS 26, *)
     @Test func updateExistingValue() {
         var dictionary = QUICStreamIDDictionary<Int>()
-        dictionary.updateValue(42, forID: 1)
-        let previous = dictionary.updateValue(41, forID: 1)
+        dictionary.updateValue(42, forKey: 1)
+        let previous = dictionary.updateValue(41, forKey: 1)
         #expect(previous == 42)
         #expect(dictionary.count == 1)
     }
@@ -77,15 +77,15 @@ struct QUICStreamIDDictionaryTests {
     @Test func removeValue() {
         var dictionary = QUICStreamIDDictionary<Int>()
         dictionary[1] = 42
-        #expect(dictionary.removeValue(forID: 0) == nil)
-        #expect(dictionary.removeValue(forID: 1) == 42)
+        #expect(dictionary.removeValue(forKey: 0) == nil)
+        #expect(dictionary.removeValue(forKey: 1) == 42)
         #expect(dictionary.count == 0)
     }
 
     @available(anyAppleOS 26, *)
     @Test func removeUnknownValue() {
         var dictionary = QUICStreamIDDictionary<Int>()
-        #expect(dictionary.removeValue(forID: 0) == nil)
+        #expect(dictionary.removeValue(forKey: 0) == nil)
         #expect(dictionary.count == 0)
     }
 
@@ -127,7 +127,7 @@ struct QUICStreamIDDictionaryTests {
         dictionary[evicted] = 1
         dictionary[evictor] = 2
 
-        #expect(dictionary.updateValue(3, forID: evicted) == 1)
+        #expect(dictionary.updateValue(3, forKey: evicted) == 1)
         #expect(dictionary[evicted] == 3)
         #expect(dictionary.count == 2)
     }
@@ -140,7 +140,7 @@ struct QUICStreamIDDictionaryTests {
         dictionary[evicted] = 1
         dictionary[evictor] = 2
 
-        #expect(dictionary.removeValue(forID: evicted) == 1)
+        #expect(dictionary.removeValue(forKey: evicted) == 1)
         #expect(dictionary[evicted] == nil)
         #expect(dictionary[evictor] == 2)
         #expect(dictionary.count == 1)
@@ -161,7 +161,7 @@ struct QUICStreamIDDictionaryTests {
         }
 
         for id in ids {
-            dictionary.removeValue(forID: id)
+            dictionary.removeValue(forKey: id)
         }
 
         #expect(dictionary.isEmpty)
@@ -208,8 +208,8 @@ struct QUICStreamIDDictionaryTests {
         dictionary[evicted] = 1
         dictionary[evictor] = 2
 
-        dictionary.removeValue(forID: evictor)
-        #expect(dictionary.updateValue(3, forID: evicted) == 1)
+        dictionary.removeValue(forKey: evictor)
+        #expect(dictionary.updateValue(3, forKey: evicted) == 1)
 
         #expect(!dictionary._testOnly_isCached(evicted))
         #expect(dictionary[evicted] == 3)
@@ -253,7 +253,7 @@ struct QUICStreamIDDictionaryTests {
 
         // Remove everything but the cached ID.
         for id in spilling.dropLast() {
-            #expect(dictionary.removeValue(forID: id) != nil)
+            #expect(dictionary.removeValue(forKey: id) != nil)
         }
 
         // The dictionary is empty again, so the next evicted value goes back into the array.
@@ -275,9 +275,9 @@ struct QUICStreamIDDictionaryTests {
             dictionary[id] = index
         }
 
-        #expect(dictionary.updateValue(42, forID: ids[2]) == 2)
+        #expect(dictionary.updateValue(42, forKey: ids[2]) == 2)
         #expect(dictionary[ids[2]] == 42)
-        #expect(dictionary.removeValue(forID: ids[2]) == 42)
+        #expect(dictionary.removeValue(forKey: ids[2]) == 42)
         #expect(dictionary[ids[2]] == nil)
         #expect(dictionary.count == ids.count - 1)
     }

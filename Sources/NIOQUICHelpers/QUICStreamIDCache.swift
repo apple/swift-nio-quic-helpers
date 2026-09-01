@@ -20,48 +20,48 @@
 struct QUICStreamIDCache<Value> {
     @usableFromInline
     struct Slot {
-        @usableFromInline var _id: UInt64
+        @usableFromInline var _rawKey: UInt64
         @usableFromInline var _value: Optional<Value>
 
         @inlinable
-        var id: UInt64 { self._id }
+        var rawKey: UInt64 { self._rawKey }
 
         @inlinable
         var value: Value? { self._value }
 
         @inlinable
-        init(id: QUICStreamID, value: Value) {
-            self._id = id.rawValue
+        init(key: QUICStreamID, value: Value) {
+            self._rawKey = key.rawValue
             self._value = value
         }
 
         @inlinable
         init() {
-            self._id = .max  // Not a valid QUICStreamID
+            self._rawKey = .max  // Not a valid QUICStreamID
             self._value = nil
         }
 
         @inlinable
         var isEmpty: Bool {
-            self._id == .max
+            self._rawKey == .max
         }
 
         @inlinable
-        func containsID(_ id: QUICStreamID) -> Bool {
-            self._id == id.rawValue
+        func containsKey(_ key: QUICStreamID) -> Bool {
+            self._rawKey == key.rawValue
         }
 
         @inlinable
-        func value(forID id: QUICStreamID) -> Value? {
-            self._id == id.rawValue ? self._value : nil
+        func value(forKey key: QUICStreamID) -> Value? {
+            self._rawKey == key.rawValue ? self._value : nil
         }
 
         @inlinable
-        mutating func removeValue(forID id: QUICStreamID) -> Value? {
+        mutating func removeValue(forKey key: QUICStreamID) -> Value? {
             var value: Value? = nil
 
-            if self._id == id.rawValue {
-                self._id = .max
+            if self._rawKey == key.rawValue {
+                self._rawKey = .max
                 swap(&value, &self._value)
             }
 
@@ -109,23 +109,23 @@ struct QUICStreamIDCache<Value> {
 
     /// Index of the slot for the given stream ID.
     @inlinable
-    func slotIndex(of id: QUICStreamID) -> Int {
+    func slotIndex(of key: QUICStreamID) -> Int {
         // Drop the type bits and then mask. The mask can be used instead of '%' as the capacity is
         // guaranteed to be a power of two (and the mask is just `capacity - 1`).
-        Int((id.rawValue >> 2) & self._mask)
+        Int((key.rawValue >> 2) & self._mask)
     }
 
     /// Returns the value for the given stream ID, if it exists in the cache.
     @inlinable
-    subscript(id: QUICStreamID) -> Value? {
-        let index = self.slotIndex(of: id)
-        return self._slots[index].value(forID: id)
+    subscript(key: QUICStreamID) -> Value? {
+        let index = self.slotIndex(of: key)
+        return self._slots[index].value(forKey: key)
     }
 
     /// Returns whether the cache contains the given stream ID.
     @inlinable
-    func contains(_ id: QUICStreamID) -> Bool {
-        self._slots[self.slotIndex(of: id)].containsID(id)
+    func contains(_ key: QUICStreamID) -> Bool {
+        self._slots[self.slotIndex(of: key)].containsKey(key)
     }
 
     @usableFromInline
@@ -135,30 +135,30 @@ struct QUICStreamIDCache<Value> {
         /// The value replaced a value for the same stream ID.
         case replaced(Value)
         /// The value was inserted but evicted a value for a different stream ID.
-        case evicted(id: QUICStreamID, value: Value)
+        case evicted(key: QUICStreamID, value: Value)
     }
 
     /// Updates the value stored for the given stream ID.
     ///
     /// - Parameters:
     ///   - value: The value to store.
-    ///   - id: The ID of the stream.
+    ///   - key: The ID of the stream.
     /// - Returns: Whether the value was inserted, replaced an existed value, or evicted a value
     ///   for another stream.
     @discardableResult
     @inlinable
-    mutating func updateValue(_ value: Value, forID id: QUICStreamID) -> UpdateResult {
-        let index = self.slotIndex(of: id)
+    mutating func updateValue(_ value: Value, forKey key: QUICStreamID) -> UpdateResult {
+        let index = self.slotIndex(of: key)
 
-        var slot = Slot(id: id, value: value)
+        var slot = Slot(key: key, value: value)
         swap(&self._slots[index], &slot)
 
         if let previous = slot.value {
-            if slot.containsID(id) {
+            if slot.containsKey(key) {
                 return .replaced(previous)
             } else {
                 assert(!slot.isEmpty)
-                return .evicted(id: QUICStreamID(rawValue: slot.id), value: previous)
+                return .evicted(key: QUICStreamID(rawValue: slot.rawKey), value: previous)
             }
         } else {
             assert(slot.isEmpty)
@@ -173,10 +173,10 @@ struct QUICStreamIDCache<Value> {
     /// Removes the value associated with the given ID, if one exists.
     @discardableResult
     @inlinable
-    mutating func removeValue(forID id: QUICStreamID) -> Value? {
-        let index = self.slotIndex(of: id)
+    mutating func removeValue(forKey key: QUICStreamID) -> Value? {
+        let index = self.slotIndex(of: key)
 
-        if let value = self._slots[index].removeValue(forID: id) {
+        if let value = self._slots[index].removeValue(forKey: key) {
             self._count &-= 1
             return value
         } else {
@@ -213,7 +213,7 @@ struct QUICStreamIDCache<Value> {
         // are vacant.
         let bit = UInt64(oldCapacity)
         for index in 0..<oldCapacity {
-            if !self._slots[index].isEmpty && (self._slots[index].id >> 2 & bit) != 0 {
+            if !self._slots[index].isEmpty && (self._slots[index].rawKey >> 2 & bit) != 0 {
                 self._slots.swapAt(index, index | oldCapacity)
             }
         }
@@ -222,7 +222,7 @@ struct QUICStreamIDCache<Value> {
 
 extension QUICStreamIDCache: Sequence {
     @usableFromInline
-    typealias Element = (QUICStreamID, Value)
+    typealias Element = (key: QUICStreamID, value: Value)
 
     @inlinable
     func makeIterator() -> Iterator {
@@ -240,10 +240,10 @@ extension QUICStreamIDCache: Sequence {
         }
 
         @inlinable
-        mutating func next() -> (QUICStreamID, Value)? {
+        mutating func next() -> (key: QUICStreamID, value: Value)? {
             while let slot = self._iterator.next() {
                 if let value = slot.value {
-                    return (QUICStreamID(rawValue: slot.id), value)
+                    return (QUICStreamID(rawValue: slot.rawKey), value)
                 }
             }
             return nil
