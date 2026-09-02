@@ -45,6 +45,12 @@ extension QUICStreamIDDictionary {
             self._dictionary.count
         }
 
+        /// The number of stream IDs in the view.
+        @inlinable
+        public var underestimatedCount: Int {
+            self._dictionary.count
+        }
+
         /// Whether the view is empty.
         @inlinable
         public var isEmpty: Bool {
@@ -96,6 +102,12 @@ extension QUICStreamIDDictionary {
             self._dictionary.count
         }
 
+        /// The number of values in the view.
+        @inlinable
+        public var underestimatedCount: Int {
+            self._dictionary.count
+        }
+
         /// Whether the view is empty.
         @inlinable
         public var isEmpty: Bool {
@@ -122,3 +134,9 @@ extension QUICStreamIDDictionary {
         }
     }
 }
+
+@available(anyAppleOS 26, *)
+extension QUICStreamIDDictionary.IDs: Sendable where Value: Sendable {}
+
+@available(anyAppleOS 26, *)
+extension QUICStreamIDDictionary.Values: Sendable where Value: Sendable {}

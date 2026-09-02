@@ -330,8 +330,19 @@ extension QUICStreamIDDictionary {
 }
 
 @available(anyAppleOS 26, *)
+extension QUICStreamIDDictionary: Sendable where Value: Sendable {}
+@available(anyAppleOS 26, *)
+extension QUICStreamIDDictionary.OverflowEntry: Sendable where Value: Sendable {}
+
+@available(anyAppleOS 26, *)
 extension QUICStreamIDDictionary: Sequence {
     public typealias Element = (id: QUICStreamID, value: Value)
+
+    /// The number of elements in the dictionary.
+    @inlinable
+    public var underestimatedCount: Int {
+        self.count
+    }
 
     @inlinable
     public func makeIterator() -> Iterator {

@@ -400,6 +400,20 @@ struct QUICStreamIDDictionaryTests {
         }
     }
 
+    @available(anyAppleOS 26, *)
+    @Test func underestimatedCountIsExact() {
+        var dictionary = Self.evictingDictionary()
+        let ids = Self.collidingIDs(Self.overflowArrayCapacity + 2)
+
+        for (index, id) in ids.enumerated() {
+            dictionary[id] = index
+        }
+
+        #expect(dictionary.underestimatedCount == ids.count)
+        #expect(dictionary.ids.underestimatedCount == ids.count)
+        #expect(dictionary.values.underestimatedCount == ids.count)
+    }
+
     /// Mirrors `QUICStreamIDDictionary.overflowArrayCapacity`, which is private.
     private static let overflowArrayCapacity = 32
 
