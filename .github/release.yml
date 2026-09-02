@@ -11,3 +11,4 @@ changelog:
         - 🔨 semver/patch
     - title: Other Changes
       labels:
+        - semver/none
