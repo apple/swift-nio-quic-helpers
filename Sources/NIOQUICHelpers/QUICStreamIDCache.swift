@@ -220,6 +220,9 @@ struct QUICStreamIDCache<Value> {
     }
 }
 
+extension QUICStreamIDCache: Sendable where Value: Sendable {}
+extension QUICStreamIDCache.Slot: Sendable where Value: Sendable {}
+
 extension QUICStreamIDCache: Sequence {
     @usableFromInline
     typealias Element = (id: QUICStreamID, value: Value)
