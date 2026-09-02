@@ -222,7 +222,7 @@ struct QUICStreamIDCache<Value> {
 
 extension QUICStreamIDCache: Sequence {
     @usableFromInline
-    typealias Element = (QUICStreamID, Value)
+    typealias Element = (id: QUICStreamID, value: Value)
 
     @inlinable
     func makeIterator() -> Iterator {
@@ -240,7 +240,7 @@ extension QUICStreamIDCache: Sequence {
         }
 
         @inlinable
-        mutating func next() -> (QUICStreamID, Value)? {
+        mutating func next() -> (id: QUICStreamID, value: Value)? {
             while let slot = self._iterator.next() {
                 if let value = slot.value {
                     return (QUICStreamID(rawValue: slot.id), value)

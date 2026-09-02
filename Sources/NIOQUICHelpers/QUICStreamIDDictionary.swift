@@ -112,16 +112,6 @@ public struct QUICStreamIDDictionary<Value> {
         self._overflowCount = 0
     }
 
-    /// Returns whether the dictionary contains a value for the given stream ID.
-    @inlinable
-    public func contains(_ id: QUICStreamID) -> Bool {
-        if self._caches[self._cacheIndex(of: id)].contains(id) {
-            return true
-        } else {
-            return self._overflowIndex(of: id) != nil
-        }
-    }
-
     /// Returns or updates the value associated with a given ID.
     @inlinable
     public subscript(id: QUICStreamID) -> Value? {
@@ -341,7 +331,7 @@ extension QUICStreamIDDictionary {
 
 @available(anyAppleOS 26, *)
 extension QUICStreamIDDictionary: Sequence {
-    public typealias Element = (QUICStreamID, Value)
+    public typealias Element = (id: QUICStreamID, value: Value)
 
     @inlinable
     public func makeIterator() -> Iterator {
@@ -368,7 +358,7 @@ extension QUICStreamIDDictionary: Sequence {
         }
 
         @inlinable
-        public mutating func next() -> (QUICStreamID, Value)? {
+        public mutating func next() -> (id: QUICStreamID, value: Value)? {
             while true {
                 switch self._state {
                 case .iteratingCache(let index, var iterator):
@@ -404,9 +394,9 @@ extension QUICStreamIDDictionary: Sequence {
                 case .iteratingOverflowDictionary(var iterator):
                     self._state = .finished
 
-                    if let value = iterator.next() {
+                    if let (id, value) = iterator.next() {
                         self._state = .iteratingOverflowDictionary(iterator)
-                        return value
+                        return (id, value)
                     } else {
                         self._state = .finished
                     }

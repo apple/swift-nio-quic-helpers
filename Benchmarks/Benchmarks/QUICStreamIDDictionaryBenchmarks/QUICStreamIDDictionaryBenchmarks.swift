@@ -62,6 +62,30 @@ let benchmarks: @Sendable () -> Void = {
     Benchmark("Fill (reference)") { benchmark in
         fill(benchmark, StreamStateObject())
     }
+
+    Benchmark("Iterate IDs (value)") { benchmark in
+        iterateIDs(benchmark, StreamState())
+    }
+
+    Benchmark("Iterate IDs (reference)") { benchmark in
+        iterateIDs(benchmark, StreamStateObject())
+    }
+
+    Benchmark("Iterate values (value)") { benchmark in
+        iterateValues(benchmark, StreamState())
+    }
+
+    Benchmark("Iterate values (reference)") { benchmark in
+        iterateValues(benchmark, StreamStateObject())
+    }
+
+    Benchmark("Contains (value)") { benchmark in
+        contains(benchmark, StreamState())
+    }
+
+    Benchmark("Contains (reference)") { benchmark in
+        contains(benchmark, StreamStateObject())
+    }
 }
 
 private func streamChurn<Value>(_ benchmark: Benchmark, _ value: Value) {
@@ -130,6 +154,51 @@ private func fill<Value>(_ benchmark: Benchmark, _ value: Value) {
         }
         blackHole(dictionary.count)
     }
+}
+
+private func iterateIDs<Value>(_ benchmark: Benchmark, _ value: Value) {
+    let dictionary = filledDictionary(count: concurrentStreams, value: value)
+
+    benchmark.startMeasurement()
+
+    for _ in benchmark.scaledIterations {
+        for id in dictionary.ids {
+            blackHole(id)
+        }
+    }
+}
+
+private func iterateValues<Value>(_ benchmark: Benchmark, _ value: Value) {
+    let dictionary = filledDictionary(count: concurrentStreams, value: value)
+
+    benchmark.startMeasurement()
+
+    for _ in benchmark.scaledIterations {
+        for value in dictionary.values {
+            blackHole(value)
+        }
+    }
+}
+
+private func contains<Value>(_ benchmark: Benchmark, _ value: Value) {
+    let dictionary = filledDictionary(count: concurrentStreams, value: value)
+    let ids = openStreamIDs(count: concurrentStreams)
+
+    benchmark.startMeasurement()
+
+    for _ in benchmark.scaledIterations {
+        for id in ids {
+            blackHole(dictionary.ids.contains(id))
+        }
+    }
+}
+
+private func filledDictionary<Value>(count: Int, value: Value) -> QUICStreamIDDictionary<Value> {
+    var dictionary = QUICStreamIDDictionary<Value>()
+    for id in openStreamIDs(count: count) {
+        dictionary[id] = value
+    }
+    return dictionary
 }
 
 private func openStreamIDs(count: Int) -> [QUICStreamID] {
