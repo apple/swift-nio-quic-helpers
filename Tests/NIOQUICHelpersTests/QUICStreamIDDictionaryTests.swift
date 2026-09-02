@@ -115,7 +115,7 @@ struct QUICStreamIDDictionaryTests {
 
         #expect(dictionary[evicted] == 1)
         #expect(dictionary[evictor] == 2)
-        #expect(dictionary.contains(evicted))
+        #expect(dictionary.ids.contains(evicted))
         #expect(dictionary.count == 2)
     }
 
@@ -366,6 +366,38 @@ struct QUICStreamIDDictionaryTests {
         #expect(dictionary[evicted] == 11)
         #expect(dictionary._testOnly_isInOverflowArray(evicted))
         #expect(dictionary.count == 2)
+    }
+
+    @available(anyAppleOS 26, *)
+    @Test func idsAndValuesOfEmptyDictionary() {
+        let dictionary = QUICStreamIDDictionary<Int>()
+
+        #expect(dictionary.ids.isEmpty)
+        #expect(dictionary.ids.count == 0)
+        #expect(Array(dictionary.ids).isEmpty)
+        #expect(dictionary.values.isEmpty)
+        #expect(dictionary.values.count == 0)
+        #expect(Array(dictionary.values).isEmpty)
+    }
+
+    @available(anyAppleOS 26, *)
+    @Test func idsAndValuesIncludeCachedAndOverflowedEntries() {
+        // More IDs than the overflow array holds, so all three storage tiers are populated.
+        var dictionary = Self.evictingDictionary()
+        let ids = Self.collidingIDs(Self.overflowArrayCapacity + 2)
+
+        for (index, id) in ids.enumerated() {
+            dictionary[id] = index
+        }
+
+        #expect(dictionary.ids.count == ids.count)
+        #expect(dictionary.values.count == ids.count)
+        #expect(Set(dictionary.ids) == Set(ids))
+        #expect(Set(dictionary.values) == Set(0..<ids.count))
+
+        for id in ids {
+            #expect(dictionary.ids.contains(id))
+        }
     }
 
     /// Mirrors `QUICStreamIDDictionary.overflowArrayCapacity`, which is private.
